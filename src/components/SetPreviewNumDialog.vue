@@ -8,7 +8,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确认</el-button>
+        <el-button type="primary" @click="ReturnVal">确认</el-button>
       </div>
     </template>
   </el-dialog>
@@ -21,9 +21,16 @@ let dialogFormVisible = ref(false)
 
 const formLabelWidth = '100px'
 
+const emit = defineEmits(['GetVal'])
+
 const form = reactive({
-  num: ''
+  num: 4
 })
+
+function ReturnVal() {
+  emit('GetVal', form.num)
+  dialogFormVisible.value = false
+}
 
 const open = () => {
   dialogFormVisible.value = true

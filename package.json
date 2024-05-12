@@ -14,11 +14,14 @@
   },
   "dependencies": {
     "axios": "^1.6.8",
+    "easy-player": "^2.2.7",
     "element-plus": "^2.7.2",
+    "hls.js": "^1.5.8",
     "mitt": "^3.0.1",
     "pinia": "^2.1.7",
     "reset-css": "^5.0.2",
     "vue": "^3.4.21",
+    "vue-hls-video-player": "^1.0.1",
     "vue-router": "^4.3.0"
   },
   "devDependencies": {

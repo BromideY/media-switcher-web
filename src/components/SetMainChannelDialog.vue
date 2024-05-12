@@ -32,6 +32,9 @@
       <el-form-item label="推流地址" :label-width="formLabelWidth">
         <el-input type="string" v-model="form.output_url" autocomplete="off" />
       </el-form-item>
+      <el-form-item label="播流地址" :label-width="formLabelWidth">
+        <el-input type="string" v-model="form.play_url" autocomplete="off" />
+      </el-form-item>
     </el-form>
     <template #footer>
       <div class="dialog-footer">
@@ -46,6 +49,7 @@
 import { reactive, ref } from 'vue'
 import { request } from '@/utils/request'
 import { ElMessage } from 'element-plus'
+import mitt from '@/utils/mitt'
 
 let dialogFormVisible = ref(false)
 
@@ -82,7 +86,8 @@ const form = reactive({
     sample_rate: 44100,
     bit_rate: 64
   },
-  output_url: 'rtmp://localhost/live/output'
+  output_url: 'rtmp://localhost/live/output',
+  play_url: 'http://localhost:8080/hls/live/output.m3u8'
 })
 
 let isLoading = ref(false)
@@ -97,6 +102,7 @@ function Confirm() {
     ElMessage.info(JSON.stringify(res))
     isLoading.value = false
     dialogFormVisible.value = false
+    mitt.emit('SetHlsUrl', form.play_url)
   })
 }
 

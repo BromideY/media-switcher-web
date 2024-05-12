@@ -4,36 +4,40 @@
     <div class="header">
       <el-button @click="showPreviewNumDialog" type="primary">设置预览数量</el-button>
       <el-button @click="showSetMainChannelDialog" type="primary">主画面参数</el-button>
+      <el-button @click="startHlsPlayer" type="primary">播放真实输出画面</el-button>
     </div>
     <div class="main">
-      <Player class="real-player" :playerWidth="640" :playerHeight="360" :index="-1"></Player>
+      <RtcPlayer :playerWidth="640" :playerHeight="360" :index="-1"></RtcPlayer>
+      <HlsPlayer :playerWidth="640" :playerHeight="360" ref="HlsPlayerInstance"></HlsPlayer>
     </div>
     <div class="preview">
-      <Player
+      <RtcPlayer
         v-for="(i, index) in preview_num"
         :key="i"
         class="preview-player"
         :playerWidth="320"
         :playerHeight="180"
         :index="index"
-      ></Player>
+      ></RtcPlayer>
     </div>
   </div>
   <div>
     <SetPreviewNumDialog
-      ref="openSetPreviewNumDialog"
+      ref="SetPreviewNumDialogInstance"
       @GetVal="GetSetPreviewNumDialogVal"
     ></SetPreviewNumDialog>
-    <SetMainChannelDialog ref="openSetMainChannelDialog"></SetMainChannelDialog>
+    <SetMainChannelDialog ref="SetMainChannelDialogInstance"></SetMainChannelDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import SetPreviewNumDialog from '../components/SetPreviewNumDialog.vue'
 import SetMainChannelDialog from '../components/SetMainChannelDialog.vue'
+import RtcPlayer from '../components/RtcPlayer.vue'
+import HlsPlayer from '../components/HlsPlayer.vue'
 import { ref } from 'vue'
-import Player from '../components/Player.vue'
 import { request } from '@/utils/request'
+
 let preview_num = ref(4)
 request({
   method: 'post',
@@ -45,15 +49,20 @@ request({
   }
 })
 
-let openSetPreviewNumDialog = ref()
-let openSetMainChannelDialog = ref()
+let SetPreviewNumDialogInstance = ref()
+let SetMainChannelDialogInstance = ref()
+let HlsPlayerInstance = ref()
 
 function showPreviewNumDialog() {
-  openSetPreviewNumDialog.value.open()
+  SetPreviewNumDialogInstance.value.open()
 }
 
 function showSetMainChannelDialog() {
-  openSetMainChannelDialog.value.open()
+  SetMainChannelDialogInstance.value.open()
+}
+
+function startHlsPlayer() {
+  HlsPlayerInstance.value.StartPlay()
 }
 
 function GetSetPreviewNumDialogVal(val: any) {
@@ -77,8 +86,9 @@ function GetSetPreviewNumDialogVal(val: any) {
   margin: 0 auto;
 }
 .main {
+  margin-top: 10px;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
 }
 .preview-player {
   margin-left: 27px;

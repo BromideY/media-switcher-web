@@ -29,10 +29,10 @@
       <el-form-item label="音频码率(kbps)" :label-width="formLabelWidth">
         <el-input type="number" v-model.number="form.audio.bit_rate" autocomplete="off" />
       </el-form-item>
-      <el-form-item label="推流地址" :label-width="formLabelWidth">
+      <el-form-item label="推流地址(rtmp)" :label-width="formLabelWidth">
         <el-input type="string" v-model="form.output_url" autocomplete="off" />
       </el-form-item>
-      <el-form-item label="播流地址" :label-width="formLabelWidth">
+      <el-form-item label="播流地址(m3u8)" :label-width="formLabelWidth">
         <el-input type="string" v-model="form.play_url" autocomplete="off" />
       </el-form-item>
     </el-form>
@@ -53,7 +53,7 @@ import mitt from '@/utils/mitt'
 
 let dialogFormVisible = ref(false)
 
-const formLabelWidth = '120px'
+const formLabelWidth = '150px'
 
 const sample_rate_option = [
   {

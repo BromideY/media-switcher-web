@@ -1,5 +1,7 @@
 <template>
-  <video ref="video" controls autoplay :style="playerStyleObj"></video>
+  <div>
+    <video ref="video" controls autoplay :style="playerStyleObj"></video>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -14,26 +16,30 @@ let playerStyleObj = reactive({
 })
 let src = ref('')
 const video = ref()
-let hls = new Hls()
+let hls: Hls
 
 mitt.on('SetHlsUrl', (e) => {
   src.value = e as string
 })
 
 function StartPlay() {
+  hls = new Hls()
   hls.loadSource(src.value)
   hls.attachMedia(video.value)
   hls.on(Hls.Events.MANIFEST_PARSED, function () {
     video.value.play()
   })
 }
-defineExpose({ StartPlay })
+function StopPlay() {
+  hls.stopLoad()
+  hls.destroy()
+}
+
+defineExpose({ StartPlay, StopPlay })
 </script>
 
 <style scoped>
 video {
-  width: 640px;
-  height: 360px;
   background-color: #888;
 }
 </style>

@@ -10,9 +10,8 @@
       autoplay
       muted
     ></video>
-    <br />
     <div class="control" v-if="showControl">
-      <el-input v-model="url" placeholder="源流地址" /><br />
+      <el-input v-model="url" placeholder="源流地址(rtmp/rtsp/hls/mp4....)" /><br />
       <el-button @click="Play" type="primary" :loading="isLoading">播放</el-button>
       <el-button @click="Stop" type="primary" :loading="isLoading">停止</el-button>
       <el-button @click="Switch" type="primary">切换到主画面</el-button>
@@ -133,6 +132,7 @@ function Play() {
 
 <style scoped>
 video {
+  display: block;
   background-color: #888;
 }
 .video-border {

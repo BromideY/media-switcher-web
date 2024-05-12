@@ -2,22 +2,22 @@
   <el-dialog v-model="dialogFormVisible" title="设置主画面参数" width="500">
     <el-form :model="form">
       <el-form-item label="视频幅面宽度" :label-width="formLabelWidth">
-        <el-input type="number" v-model="form.video.width" autocomplete="off" />
+        <el-input type="number" v-model.number="form.video.width" autocomplete="off" />
       </el-form-item>
       <el-form-item label="视频幅面高度" :label-width="formLabelWidth">
-        <el-input type="number" v-model="form.video.height" autocomplete="off" />
+        <el-input type="number" v-model.number="form.video.height" autocomplete="off" />
       </el-form-item>
       <el-form-item label="视频帧率" :label-width="formLabelWidth">
-        <el-input type="number" v-model="form.video.frame_rate" autocomplete="off" />
+        <el-input type="number" v-model.number="form.video.frame_rate" autocomplete="off" />
       </el-form-item>
       <el-form-item label="视频码率(kbps)" :label-width="formLabelWidth">
-        <el-input type="number" v-model="form.video.bit_rate" autocomplete="off" />
+        <el-input type="number" v-model.number="form.video.bit_rate" autocomplete="off" />
       </el-form-item>
       <el-form-item label="音频声道数" :label-width="formLabelWidth">
-        <el-input type="number" v-model="form.audio.channels" autocomplete="off" />
+        <el-input type="number" v-model.number="form.audio.channels" autocomplete="off" />
       </el-form-item>
       <el-form-item label="音频采样率" :label-width="formLabelWidth">
-        <el-select v-model="form.audio.sample_rate" placeholder="Select">
+        <el-select v-model.number="form.audio.sample_rate" placeholder="Select">
           <el-option
             v-for="item in sample_rate_option"
             :key="item.value"
@@ -27,7 +27,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="音频码率(kbps)" :label-width="formLabelWidth">
-        <el-input type="number" v-model="form.video.bit_rate" autocomplete="off" />
+        <el-input type="number" v-model.number="form.audio.bit_rate" autocomplete="off" />
       </el-form-item>
       <el-form-item label="推流地址" :label-width="formLabelWidth">
         <el-input type="string" v-model="form.output_url" autocomplete="off" />
@@ -93,17 +93,11 @@ function Confirm() {
     method: 'post',
     url: '/create_main_channel',
     data: { video: form.video, audio: form.audio, output_url: form.output_url }
+  }).then((res: any) => {
+    ElMessage.info(JSON.stringify(res))
+    isLoading.value = false
+    dialogFormVisible.value = false
   })
-    .then((res: any) => {
-      ElMessage.info(res)
-      isLoading.value = false
-      dialogFormVisible.value = false
-    })
-    .catch((res) => {
-      ElMessage.info(res)
-      isLoading.value = false
-      dialogFormVisible.value = false
-    })
 }
 
 const open = () => {

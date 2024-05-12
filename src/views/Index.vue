@@ -52,7 +52,7 @@ request({
   url: '/query_preview_channel_num',
   data: {}
 }).then((res: any) => {
-  if (res.preview_channel_num > 0) {
+  if (res.preview_channel_num > 4) {
     preview_num.value = res.preview_channel_num
   }
 })

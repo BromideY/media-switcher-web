@@ -58,7 +58,7 @@ if (props.index < 0) {
     url: '/query_main_channel',
     data: {}
   }).then((res: any) => {
-    if (res.preview_index > 0) {
+    if (res.preview_index >= 0) {
       mitt.emit('currentPreivew', res.preview_index)
     }
   })

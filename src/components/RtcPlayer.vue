@@ -63,8 +63,8 @@ if (props.index < 0) {
     }
   })
 } else {
-  mitt.on('currentPreivew', (e) => {
-    if (e == props.index) {
+  mitt.on('currentPreivew', (val) => {
+    if (val == props.index) {
       VideoBorder.value = true
     } else {
       VideoBorder.value = false

@@ -90,6 +90,20 @@ const form = reactive({
   play_url: 'http://localhost:8080/hls/live/output.m3u8'
 })
 
+request({
+  method: 'post',
+  url: '/query_main_channel',
+  data: {}
+}).then((res: any) => {
+  if (res.success == true) {
+    form.video = res.channel_params.video
+    form.audio = res.channel_params.audio
+    form.output_url = res.channel_params.output_url
+    form.play_url = res.channel_params.play_url
+    mitt.emit('SetHlsUrl', { url: form.play_url, is_pushing: res.is_pushing })
+  }
+})
+
 let isLoading = ref(false)
 
 function Confirm() {
@@ -97,12 +111,17 @@ function Confirm() {
   request({
     method: 'post',
     url: '/create_main_channel',
-    data: { video: form.video, audio: form.audio, output_url: form.output_url }
+    data: {
+      video: form.video,
+      audio: form.audio,
+      output_url: form.output_url,
+      play_url: form.play_url
+    }
   }).then((res: any) => {
     ElMessage.info(JSON.stringify(res))
     isLoading.value = false
     dialogFormVisible.value = false
-    mitt.emit('SetHlsUrl', form.play_url)
+    mitt.emit('SetHlsUrl', { url: form.play_url, is_pushing: false })
   })
 }
 

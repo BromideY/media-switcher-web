@@ -4,8 +4,8 @@
     <div class="header">
       <el-button @click="showPreviewNumDialog" type="primary">设置预览数量</el-button>
       <el-button @click="showSetMainChannelDialog" type="primary">主画面参数</el-button>
-      <el-button @click="StartPush" type="primary">开始推流</el-button>
-      <el-button @click="StopPush" type="primary">结束推流</el-button>
+      <el-button @click="StartPush" type="primary" :loading="pushLoading">开始推流</el-button>
+      <el-button @click="StopPush" type="primary" :loading="pushLoading">结束推流</el-button>
     </div>
     <div class="main">
       <div style="text-align: center">
@@ -60,6 +60,7 @@ request({
 let SetPreviewNumDialogInstance = ref()
 let SetMainChannelDialogInstance = ref()
 let HlsPlayerInstance = ref()
+let pushLoading = ref(false)
 
 function showPreviewNumDialog() {
   SetPreviewNumDialogInstance.value.open()
@@ -70,23 +71,31 @@ function showSetMainChannelDialog() {
 }
 
 function StartPush() {
+  pushLoading.value = true
   request({
     method: 'post',
     url: '/start_push',
     data: {}
   }).then((res: any) => {
     ElMessage.info(JSON.stringify(res))
+    pushLoading.value = false
+    if (res.success == true) {
+      HlsPlayerInstance.value.StartPlay()
+    }
   })
-  HlsPlayerInstance.value.StartPlay()
 }
 
 function StopPush() {
+  pushLoading.value = true
   request({
     method: 'post',
     url: '/stop_push',
     data: {}
+  }).then((res: any) => {
+    ElMessage.info(JSON.stringify(res))
+    pushLoading.value = false
+    HlsPlayerInstance.value.StopPlay()
   })
-  HlsPlayerInstance.value.StopPlay()
 }
 
 function GetSetPreviewNumDialogVal(val: any) {

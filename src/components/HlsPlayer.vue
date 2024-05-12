@@ -18,8 +18,11 @@ let src = ref('')
 const video = ref()
 let hls: Hls
 
-mitt.on('SetHlsUrl', (e) => {
-  src.value = e as string
+mitt.on('SetHlsUrl', (val: any) => {
+  src.value = val.url
+  if (val.is_pushing) {
+    StartPlay()
+  }
 })
 
 function StartPlay() {

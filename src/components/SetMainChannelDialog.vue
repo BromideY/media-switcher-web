@@ -95,7 +95,9 @@ request({
   url: '/query_main_channel',
   data: {}
 }).then((res: any) => {
-  if (res.success == true) {
+  if (!res.success) {
+    ElMessage.error('/query_main_channel:' + res.error)
+  } else {
     form.video = res.channel_params.video
     form.audio = res.channel_params.audio
     form.output_url = res.channel_params.output_url
@@ -118,6 +120,10 @@ function Confirm() {
       play_url: form.play_url
     }
   }).then((res: any) => {
+    if (!res.success) {
+      ElMessage.error('/create_main_channel:' + res.error)
+      return
+    }
     ElMessage.info(JSON.stringify(res))
     isLoading.value = false
     dialogFormVisible.value = false

@@ -52,8 +52,12 @@ request({
   url: '/query_preview_channel_num',
   data: {}
 }).then((res: any) => {
-  if (res.preview_channel_num > 4) {
-    preview_num.value = res.preview_channel_num
+  if (!res.success) {
+    ElMessage.error('/query_preview_channel_num:' + res.error)
+    return
+  }
+  if (res.preview_channel_num >= 4) {
+    preview_num.value = res.preview_channel_num + 1
   }
 })
 
@@ -77,6 +81,10 @@ function StartPush() {
     url: '/start_push',
     data: {}
   }).then((res: any) => {
+    if (!res.success) {
+      ElMessage.error('/start_push:' + res.error)
+      return
+    }
     ElMessage.info(JSON.stringify(res))
     pushLoading.value = false
     if (res.success == true) {
@@ -92,6 +100,10 @@ function StopPush() {
     url: '/stop_push',
     data: {}
   }).then((res: any) => {
+    if (!res.success) {
+      ElMessage.error('/stop_push:' + res.error)
+      return
+    }
     ElMessage.info(JSON.stringify(res))
     pushLoading.value = false
     HlsPlayerInstance.value.StopPlay()

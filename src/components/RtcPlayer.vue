@@ -58,6 +58,10 @@ if (props.index < 0) {
     url: '/query_main_channel',
     data: {}
   }).then((res: any) => {
+    if (!res.success) {
+      ElMessage.error('/query_main_channel:' + res.error)
+      return
+    }
     if (res.preview_index >= 0) {
       mitt.emit('currentPreivew', res.preview_index)
     }
@@ -78,6 +82,10 @@ if (props.index < 0) {
     url: '/query_preview_channel',
     data: { index: props.index }
   }).then((res: any) => {
+    if (!res.success) {
+      ElMessage.error('/query_preview_channel:' + res.error)
+      return
+    }
     url.value = res.source_url
   })
 }
@@ -89,7 +97,11 @@ function Switch() {
     method: 'post',
     url: '/switch_channel',
     data: { index: props.index }
-  }).then(() => {
+  }).then((res: any) => {
+    if (!res.success) {
+      ElMessage.error('/switch_channel:' + res.error)
+      return
+    }
     mitt.emit('currentPreivew', props.index)
   })
 }
@@ -100,13 +112,12 @@ function Stop() {
     method: 'post',
     url: '/stop_preview_channel',
     data: { index: props.index }
+  }).then((res: any) => {
+    if (!res.success) {
+      ElMessage.error('/stop_preview_channel:' + res.error)
+    }
+    isLoading.value = false
   })
-    .then(() => {
-      isLoading.value = false
-    })
-    .catch(() => {
-      isLoading.value = false
-    })
 }
 
 function Play() {
@@ -116,13 +127,12 @@ function Play() {
     method: 'post',
     url: '/create_preview_channel',
     data: { index: props.index, source_url: url.value }
+  }).then((res: any) => {
+    if (!res.success) {
+      ElMessage.error('/create_preview_channel:' + res.error)
+    }
+    isLoading.value = false
   })
-    .then(() => {
-      isLoading.value = false
-    })
-    .catch(() => {
-      isLoading.value = false
-    })
   player = new SrsRtcPlayerAsync()
   stream = player.stream
   show.value = true

@@ -46,7 +46,7 @@ import { ref } from 'vue'
 import { request } from '@/utils/request'
 import { ElMessage } from 'element-plus'
 
-let preview_num = ref(4)
+let preview_num = ref(8)
 request({
   method: 'post',
   url: '/query_preview_channel_num',
@@ -56,7 +56,7 @@ request({
     ElMessage.error('/query_preview_channel_num:' + res.error)
     return
   }
-  if (res.preview_channel_num >= 4) {
+  if (res.preview_channel_num >= 8) {
     preview_num.value = res.preview_channel_num + 1
   }
 })

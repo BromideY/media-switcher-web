@@ -11,7 +11,7 @@
       muted
     ></video>
     <div class="control" v-if="showControl">
-      <el-input v-model="url" placeholder="源流地址(rtmp/rtsp/hls/mp4....)" /><br />
+      <el-input v-model="source_url" placeholder="源流地址(rtmp/rtsp/hls/mp4....)" /><br />
       <el-button @click="Play" type="primary" :loading="playStopLoading">播放</el-button>
       <el-button @click="Stop" type="primary" :loading="playStopLoading">停止</el-button>
       <el-button @click="Switch" type="primary">切换到主画面</el-button>
@@ -33,22 +33,15 @@ let showControl = ref(false)
 let player = new SrsRtcPlayerAsync()
 let stream = reactive(player.stream)
 let show = ref(true)
-let url = ref('')
+let source_url = ref('')
 let showVideoControl = ref(false)
-let rtc_url = 'webrtc://localhost/live/'
+let rtc_url = 'webrtc://' + window.location.hostname + '/live/'
 let playStopLoading = ref(false)
 
 let playerStyleObj = reactive({
   width: props.playerWidth + 'px',
   height: props.playerHeight + 'px'
 })
-
-function startPlayer(player: any, url: string) {
-  player.play(url).catch(function (reason: any) {
-    player.close()
-    ElMessage.error(reason)
-  })
-}
 
 if (props.index < 0) {
   rtc_url += 'main_channel'
@@ -86,7 +79,14 @@ if (props.index < 0) {
       ElMessage.error('/query_preview_channel:' + res.error)
       return
     }
-    url.value = res.source_url
+    source_url.value = res.source_url
+  })
+}
+
+function startPlayer(player: any, url: string) {
+  player.play(url).catch(function (reason: any) {
+    player.close()
+    ElMessage.error(reason)
   })
 }
 
@@ -126,7 +126,7 @@ function Play() {
   request({
     method: 'post',
     url: '/create_preview_channel',
-    data: { index: props.index, source_url: url.value }
+    data: { index: props.index, source_url: source_url.value }
   }).then((res: any) => {
     if (!res.success) {
       ElMessage.error('/create_preview_channel:' + res.error)

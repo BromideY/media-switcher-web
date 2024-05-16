@@ -14,7 +14,7 @@
       <el-input v-model="source_url" placeholder="源流地址(rtmp/rtsp/hls/mp4....)" /><br />
       <el-button @click="Play" type="primary" :loading="playStopLoading">播放</el-button>
       <el-button @click="Stop" type="primary" :loading="playStopLoading">停止</el-button>
-      <el-button @click="Switch" type="primary">切换到主画面</el-button>
+      <el-button @click="Switch" type="primary" :loading="switchLoading">切换到主画面</el-button>
     </div>
   </div>
 </template>
@@ -37,6 +37,7 @@ let source_url = ref('')
 let showVideoControl = ref(false)
 let rtc_url = 'webrtc://' + window.location.hostname + '/live/'
 let playStopLoading = ref(false)
+let switchLoading = ref(false)
 
 let playerStyleObj = reactive({
   width: props.playerWidth + 'px',
@@ -93,11 +94,13 @@ function startPlayer(player: any, url: string) {
 startPlayer(player, rtc_url)
 
 function Switch() {
+  switchLoading.value = true
   request({
     method: 'post',
     url: '/switch_channel',
     data: { index: props.index }
   }).then((res: any) => {
+    switchLoading.value = false
     if (!res.success) {
       ElMessage.error('/switch_channel:' + res.error)
       return

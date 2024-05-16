@@ -10,7 +10,7 @@
     <div class="main">
       <div style="text-align: center">
         <RtcPlayer :playerWidth="640" :playerHeight="360" :index="-1"></RtcPlayer>
-        <el-text class="main-player-label">主监画面</el-text>
+        <el-text class="main-player-label">主画面</el-text>
       </div>
       <div style="text-align: center">
         <HlsPlayer :playerWidth="640" :playerHeight="360" ref="HlsPlayerInstance"></HlsPlayer>

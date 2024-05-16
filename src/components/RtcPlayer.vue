@@ -52,14 +52,11 @@ if (props.index < 0) {
     url: '/query_main_channel',
     data: {}
   }).then((res: any) => {
-    if (!res.success) {
-      ElMessage.error('/query_main_channel:' + res.error)
-      return
-    }
     if (res.preview_index >= 0) {
       mitt.emit('currentPreivew', res.preview_index)
     }
   })
+  startPlayer(player, rtc_url)
 } else {
   mitt.on('currentPreivew', (val) => {
     if (val == props.index) {
@@ -80,7 +77,10 @@ if (props.index < 0) {
       ElMessage.error('/query_preview_channel:' + res.error)
       return
     }
-    source_url.value = res.source_url
+    if (res.source_url != '') {
+      startPlayer(player, rtc_url)
+      source_url.value = res.source_url
+    }
   })
 }
 
@@ -94,8 +94,6 @@ function startPlayer(player: any, url: string) {
 function stopPlayer() {
   player.stop()
 }
-
-startPlayer(player, rtc_url)
 
 function Switch() {
   switchLoading.value = true

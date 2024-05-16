@@ -74,6 +74,8 @@ const sample_rate_option = [
   }
 ]
 
+let host = window.location.hostname
+
 const form = reactive({
   video: {
     width: 1280,
@@ -86,8 +88,8 @@ const form = reactive({
     sample_rate: 44100,
     bit_rate: 64
   },
-  output_url: 'rtmp://localhost/live/output',
-  play_url: 'http://localhost:8080/hls/live/output.m3u8'
+  output_url: 'rtmp://' + host + '/live/output',
+  play_url: 'http://' + host + ':8080/hls/live/output.m3u8'
 })
 
 request({
@@ -95,9 +97,7 @@ request({
   url: '/query_main_channel',
   data: {}
 }).then((res: any) => {
-  if (!res.success) {
-    ElMessage.error('/query_main_channel:' + res.error)
-  } else {
+  if (res.success) {
     form.video = res.channel_params.video
     form.audio = res.channel_params.audio
     form.output_url = res.channel_params.output_url
@@ -120,12 +120,12 @@ function Confirm() {
       play_url: form.play_url
     }
   }).then((res: any) => {
+    isLoading.value = false
     if (!res.success) {
       ElMessage.error('/create_main_channel:' + res.error)
       return
     }
     ElMessage.success(JSON.stringify(res))
-    isLoading.value = false
     dialogFormVisible.value = false
     mitt.emit('SetHlsUrl', { url: form.play_url, is_pushing: false })
   })

@@ -124,7 +124,7 @@ function Confirm() {
       ElMessage.error('/create_main_channel:' + res.error)
       return
     }
-    ElMessage.info(JSON.stringify(res))
+    ElMessage.success(JSON.stringify(res))
     isLoading.value = false
     dialogFormVisible.value = false
     mitt.emit('SetHlsUrl', { url: form.play_url, is_pushing: false })

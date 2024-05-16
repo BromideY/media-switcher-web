@@ -91,6 +91,10 @@ function startPlayer(player: any, url: string) {
   })
 }
 
+function stopPlayer() {
+  player.stop()
+}
+
 startPlayer(player, rtc_url)
 
 function Switch() {
@@ -120,6 +124,7 @@ function Stop() {
       ElMessage.error('/stop_preview_channel:' + res.error)
     }
     playStopLoading.value = false
+    stopPlayer()
   })
 }
 

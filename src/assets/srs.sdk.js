@@ -359,6 +359,11 @@ export function SrsRtcPlayerAsync() {
     return session
   }
 
+  // Stop the player.
+  self.stop = function () {
+    self.pc && self.pc.close()
+  }
+
   // Close the player.
   self.close = function () {
     self.pc && self.pc.close()

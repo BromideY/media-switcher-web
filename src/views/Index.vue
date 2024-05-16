@@ -14,7 +14,7 @@
       </div>
       <div style="text-align: center">
         <HlsPlayer :playerWidth="640" :playerHeight="360" ref="HlsPlayerInstance"></HlsPlayer>
-        <el-text class="main-player-label">输出画面</el-text>
+        <el-text class="main-player-label">输出画面({{ pushStatus }})</el-text>
       </div>
     </div>
     <div class="preview">
@@ -42,6 +42,7 @@ import SetPreviewNumDialog from '../components/SetPreviewNumDialog.vue'
 import SetMainChannelDialog from '../components/SetMainChannelDialog.vue'
 import RtcPlayer from '../components/RtcPlayer.vue'
 import HlsPlayer from '../components/HlsPlayer.vue'
+import mitt from '../utils/mitt'
 import { ref } from 'vue'
 import { request } from '@/utils/request'
 import { ElMessage } from 'element-plus'
@@ -65,6 +66,7 @@ let SetPreviewNumDialogInstance = ref()
 let SetMainChannelDialogInstance = ref()
 let HlsPlayerInstance = ref()
 let pushLoading = ref(false)
+let pushStatus = ref('未推流')
 
 function showPreviewNumDialog() {
   SetPreviewNumDialogInstance.value.open()
@@ -73,6 +75,12 @@ function showPreviewNumDialog() {
 function showSetMainChannelDialog() {
   SetMainChannelDialogInstance.value.open()
 }
+
+mitt.on('SetHlsUrl', (val: any) => {
+  if (val.is_pushing) {
+    pushStatus.value = '推流中'
+  }
+})
 
 function StartPush() {
   pushLoading.value = true
@@ -85,7 +93,8 @@ function StartPush() {
       ElMessage.error('/start_push:' + res.error)
       return
     }
-    ElMessage.info(JSON.stringify(res))
+    ElMessage.success(JSON.stringify(res))
+    pushStatus.value = '推流中'
     pushLoading.value = false
     if (res.success == true) {
       HlsPlayerInstance.value.StartPlay()
@@ -104,7 +113,8 @@ function StopPush() {
       ElMessage.error('/stop_push:' + res.error)
       return
     }
-    ElMessage.info(JSON.stringify(res))
+    pushStatus.value = '未推流'
+    ElMessage.success(JSON.stringify(res))
     pushLoading.value = false
     HlsPlayerInstance.value.StopPlay()
   })

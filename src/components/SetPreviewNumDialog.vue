@@ -2,7 +2,7 @@
   <el-dialog v-model="dialogFormVisible" title="设置预览数量" width="500">
     <el-form :model="form">
       <el-form-item label="预览数量" :label-width="formLabelWidth">
-        <el-input type="number" v-model="form.num" autocomplete="off" />
+        <el-input type="number" v-model="form.num" />
       </el-form-item>
     </el-form>
     <template #footer>

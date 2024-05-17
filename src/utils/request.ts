@@ -11,15 +11,9 @@ request.interceptors.response.use(
     return response.data
   },
   (err: AxiosError) => {
-    const errMsg =
-      'http code: ' +
-      err.response?.status +
-      ',url:' +
-      err.response?.config.url +
-      ',data:' +
-      JSON.stringify(err.response?.data)
+    const errMsg = err.response?.status + ' ' + err.response?.config.url
     ElMessage.error(errMsg)
-    return Promise.reject(err)
+    return Promise.reject(errMsg)
   }
 )
 

@@ -118,10 +118,11 @@ function Stop() {
     url: '/stop_preview_channel',
     data: { index: props.index }
   }).then((res: any) => {
+    playStopLoading.value = false
     if (!res.success) {
       ElMessage.error('/stop_preview_channel:' + res.error)
+      return
     }
-    playStopLoading.value = false
     stopPlayer()
   })
 }

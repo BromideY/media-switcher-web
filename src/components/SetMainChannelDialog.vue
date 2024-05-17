@@ -2,19 +2,19 @@
   <el-dialog v-model="dialogFormVisible" title="设置主画面参数" width="500">
     <el-form :model="form">
       <el-form-item label="视频幅面宽度" :label-width="formLabelWidth">
-        <el-input type="number" v-model.number="form.video.width" autocomplete="off" />
+        <el-input type="number" v-model.number="form.video.width" />
       </el-form-item>
       <el-form-item label="视频幅面高度" :label-width="formLabelWidth">
-        <el-input type="number" v-model.number="form.video.height" autocomplete="off" />
+        <el-input type="number" v-model.number="form.video.height" />
       </el-form-item>
       <el-form-item label="视频帧率" :label-width="formLabelWidth">
-        <el-input type="number" v-model.number="form.video.frame_rate" autocomplete="off" />
+        <el-input type="number" v-model.number="form.video.frame_rate" />
       </el-form-item>
       <el-form-item label="视频码率(kbps)" :label-width="formLabelWidth">
-        <el-input type="number" v-model.number="form.video.bit_rate" autocomplete="off" />
+        <el-input type="number" v-model.number="form.video.bit_rate" />
       </el-form-item>
       <el-form-item label="音频声道数" :label-width="formLabelWidth">
-        <el-input type="number" v-model.number="form.audio.channels" autocomplete="off" />
+        <el-input type="number" v-model.number="form.audio.channels" />
       </el-form-item>
       <el-form-item label="音频采样率" :label-width="formLabelWidth">
         <el-select v-model.number="form.audio.sample_rate" placeholder="Select">
@@ -27,13 +27,13 @@
         </el-select>
       </el-form-item>
       <el-form-item label="音频码率(kbps)" :label-width="formLabelWidth">
-        <el-input type="number" v-model.number="form.audio.bit_rate" autocomplete="off" />
+        <el-input type="number" v-model.number="form.audio.bit_rate" />
       </el-form-item>
       <el-form-item label="推流地址(rtmp)" :label-width="formLabelWidth">
-        <el-input type="string" v-model="form.output_url" autocomplete="off" />
+        <el-input type="string" v-model="form.output_url" />
       </el-form-item>
       <el-form-item label="播流地址(m3u8)" :label-width="formLabelWidth">
-        <el-input type="string" v-model="form.play_url" autocomplete="off" />
+        <el-input type="string" v-model="form.play_url" />
       </el-form-item>
     </el-form>
     <template #footer>

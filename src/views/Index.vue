@@ -2,23 +2,27 @@
 <template>
   <div class="container">
     <div class="header">
-      <div class="control">
-        <el-button @click="showPreviewNumDialog" type="primary" :icon="Setting">预览数量</el-button>
-        <el-button @click="showSetMainChannelDialog" type="primary" :icon="Setting"
-          >主画面参数</el-button
-        >
-        <el-button @click="StartPush" type="primary" :loading="pushLoading">开始推流</el-button>
-        <el-button @click="StopPush" type="primary" :loading="pushLoading">结束推流</el-button>
-      </div>
+      <img class="logo" src="/logo.png" alt="logo" />
+      <el-button @click="showPreviewNumDialog" type="primary" :icon="Setting">预览数量</el-button>
+      <el-button @click="showSetMainChannelDialog" type="primary" :icon="Setting"
+        >主画面参数</el-button
+      >
+      <el-button @click="StartPush" type="primary" :loading="pushLoading">开始推流</el-button>
+      <el-button @click="StopPush" type="primary" :loading="pushLoading">结束推流</el-button>
     </div>
     <div class="content">
       <div class="main">
         <div style="text-align: center">
-          <RtcPlayer :playerWidth="640" :playerHeight="360" :index="-1"></RtcPlayer>
+          <RtcPlayer class="player" :playerWidth="640" :playerHeight="360" :index="-1"></RtcPlayer>
           <el-text class="main-player-label">主画面</el-text>
         </div>
         <div style="text-align: center">
-          <HlsPlayer :playerWidth="640" :playerHeight="360" ref="HlsPlayerInstance"></HlsPlayer>
+          <HlsPlayer
+            class="player"
+            :playerWidth="640"
+            :playerHeight="360"
+            ref="HlsPlayerInstance"
+          ></HlsPlayer>
           <el-text class="main-player-label">输出画面({{ pushStatus }})</el-text>
         </div>
       </div>
@@ -26,7 +30,7 @@
         <RtcPlayer
           v-for="(i, index) in preview_num"
           :key="i"
-          class="preview-player"
+          class="preview-player player"
           :playerWidth="320"
           :playerHeight="180"
           :index="index"
@@ -149,11 +153,8 @@ function GetSetPreviewNumDialogVal(val: any) {
   align-items: center;
   background-color: #303133;
 }
-.header .control {
-  margin-left: 30px;
-}
-.preview_control {
-  margin-left: 10px;
+.header .logo {
+  height: 180px;
 }
 .content {
   width: 1500px;
@@ -168,6 +169,13 @@ function GetSetPreviewNumDialogVal(val: any) {
   margin-left: 27px;
   margin-right: 27px;
   margin-top: 5px;
+  transition: box-shadow 0.3s;
+}
+.player {
+  transition: box-shadow 0.3s;
+}
+.player:hover {
+  box-shadow: 0 0 15px black;
 }
 .preview {
   margin-top: 10px;

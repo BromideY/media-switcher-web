@@ -7,6 +7,7 @@
       <el-button @click="showSetMainChannelDialog" type="primary" :icon="Setting"
         >主画面参数</el-button
       >
+      <el-button @click="SceneEditor" type="primary" :icon="Setting">设置主画面特效</el-button>
       <el-button @click="StartPush" type="primary" :loading="pushLoading">开始推流</el-button>
       <el-button @click="StopPush" type="primary" :loading="pushLoading">结束推流</el-button>
     </div>
@@ -87,6 +88,10 @@ function showSetMainChannelDialog() {
   SetMainChannelDialogInstance.value.open()
 }
 
+function SceneEditor() {
+  window.open('/scene_editor', '_blank')
+}
+
 mitt.on('SetHlsUrl', (val: any) => {
   if (val.is_pushing) {
     pushStatus.value = '推流中'
@@ -154,7 +159,7 @@ function GetSetPreviewNumDialogVal(val: any) {
   background-color: #303133;
 }
 .header .logo {
-  height: 180px;
+  width: 200px;
 }
 .content {
   width: 1500px;

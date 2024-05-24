@@ -128,7 +128,7 @@ function Confirm() {
     if (!res[0].success || !res[1].success) {
       ElMessage.error('/create_pvw_pgm_channel:' + res[0].error + ',' + res[1].error)
     } else {
-      ElMessage.success(JSON.stringify('成功创建PVW/PGM通道'))
+      ElMessage.success('成功创建PVW/PGM通道')
     }
     dialogFormVisible.value = false
     mitt.emit('PGMStatus', { is_pushing: false })

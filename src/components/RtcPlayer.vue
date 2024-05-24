@@ -3,18 +3,27 @@
   <div>
     <video
       :style="playerStyleObj"
-      :class="{ 'video-border': VideoBorder }"
+      :class="{ 'pgm-border': PGMBorder, 'pvw-border': PVWBorder }"
       v-if="show"
       v-bind:srcObject="stream"
       :controls="showVideoControl"
       autoplay
       muted
     ></video>
-    <div class="control" v-if="showControl">
+    <div v-if="showInputControl">
       <el-input v-model="source_url" placeholder="源流地址(rtmp/rtsp/hls/mp4....)" /><br />
-      <el-button @click="Play" type="primary" :loading="playStopLoading">播放</el-button>
-      <el-button @click="Stop" type="primary" :loading="playStopLoading">停止</el-button>
-      <el-button @click="Switch" type="primary" :loading="switchLoading">切换到主画面</el-button>
+      <el-button @click="Play" type="primary" size="small" :loading="playStopLoading"
+        >播放</el-button
+      >
+      <el-button @click="Stop" type="primary" size="small" :loading="playStopLoading"
+        >停止</el-button
+      >
+      <el-button @click="Switch2PVW" type="primary" size="small" :loading="switchLoading"
+        >上PVW</el-button
+      >
+      <el-button @click="Switch2PGM" type="primary" size="small" :loading="switchLoading"
+        >上PGM</el-button
+      >
     </div>
   </div>
 </template>
@@ -28,8 +37,9 @@ import { ElMessage } from 'element-plus'
 
 const props = defineProps(['playerWidth', 'playerHeight', 'index'])
 
-let VideoBorder = ref(false)
-let showControl = ref(false)
+let PVWBorder = ref(false)
+let PGMBorder = ref(false)
+let showInputControl = ref(false)
 let player = new SrsRtcPlayerAsync()
 let stream = reactive(player.stream)
 let show = ref(true)
@@ -45,36 +55,64 @@ let playerStyleObj = reactive({
 })
 
 if (props.index < 0) {
-  rtc_url += 'main_channel'
   showVideoControl.value = true
-  request({
-    method: 'post',
-    url: '/query_main_channel',
-    data: {}
-  }).then((res: any) => {
-    if (res.preview_index >= 0) {
-      mitt.emit('currentPreivew', res.preview_index)
-    }
-  })
+  if (props.index == -1) {
+    request({
+      method: 'post',
+      url: '/query_pvw_pgm_channel',
+      data: { index: props.index }
+    }).then((res: any) => {
+      if (res.input_index >= 0) {
+        mitt.emit('PVWInput', res.input_index)
+      }
+    })
+    mitt.on('PGMInput', (val) => {
+      if (val == props.index) {
+        PGMBorder.value = true
+      } else {
+        PGMBorder.value = false
+      }
+    })
+    rtc_url += 'pvw_channel'
+  } else if (props.index == -2) {
+    request({
+      method: 'post',
+      url: '/query_pvw_pgm_channel',
+      data: { index: props.index }
+    }).then((res: any) => {
+      if (res.input_index >= 0) {
+        mitt.emit('PGMInput', res.input_index)
+        mitt.emit('PGMStatus', { is_pushing: res.is_pushing })
+      }
+    })
+    rtc_url += 'pgm_channel'
+  }
   startPlayer(player, rtc_url)
 } else {
-  mitt.on('currentPreivew', (val) => {
+  mitt.on('PVWInput', (val) => {
     if (val == props.index) {
-      VideoBorder.value = true
+      PVWBorder.value = true
     } else {
-      VideoBorder.value = false
+      PVWBorder.value = false
+    }
+  })
+  mitt.on('PGMInput', (val) => {
+    if (val == props.index) {
+      PGMBorder.value = true
+    } else {
+      PGMBorder.value = false
     }
   })
   showVideoControl.value = false
-  showControl.value = true
-  rtc_url += 'preview_channel_' + props.index
+  showInputControl.value = true
+  rtc_url += 'input_channel_' + props.index
   request({
     method: 'post',
-    url: '/query_preview_channel',
+    url: '/query_input_channel',
     data: { index: props.index }
   }).then((res: any) => {
     if (!res.success) {
-      ElMessage.error('/query_preview_channel:' + res.error)
+      ElMessage.error('/query_input_channel:' + res.error)
       return
     }
     if (res.source_url != '') {
@@ -95,19 +133,35 @@ function stopPlayer() {
   player.stop()
 }
 
-function Switch() {
+function Switch2PVW() {
   switchLoading.value = true
   request({
     method: 'post',
-    url: '/switch_channel',
-    data: { index: props.index }
+    url: '/switch_pvw_pgm_channel',
+    data: { index: -1, input_index: props.index }
   }).then((res: any) => {
     switchLoading.value = false
     if (!res.success) {
-      ElMessage.error('/switch_channel:' + res.error)
+      ElMessage.error('/switch_pvw_pgm_channel:' + res.error)
       return
     }
-    mitt.emit('currentPreivew', props.index)
+    mitt.emit('PVWInput', props.index)
+  })
+}
+
+function Switch2PGM() {
+  switchLoading.value = true
+  request({
+    method: 'post',
+    url: '/switch_pvw_pgm_channel',
+    data: { index: -2, input_index: props.index }
+  }).then((res: any) => {
+    switchLoading.value = false
+    if (!res.success) {
+      ElMessage.error('/switch_pvw_pgm_channel:' + res.error)
+      return
+    }
+    mitt.emit('PGMInput', props.index)
   })
 }
 
@@ -115,12 +169,12 @@ function Stop() {
   playStopLoading.value = true
   request({
     method: 'post',
-    url: '/stop_preview_channel',
+    url: '/stop_input_channel',
     data: { index: props.index }
   }).then((res: any) => {
     playStopLoading.value = false
     if (!res.success) {
-      ElMessage.error('/stop_preview_channel:' + res.error)
+      ElMessage.error('/stop_input_channel:' + res.error)
       return
     }
     stopPlayer()
@@ -132,11 +186,11 @@ function Play() {
   playStopLoading.value = true
   request({
     method: 'post',
-    url: '/create_preview_channel',
+    url: '/create_input_channel',
     data: { index: props.index, source_url: source_url.value }
   }).then((res: any) => {
     if (!res.success) {
-      ElMessage.error('/create_preview_channel:' + res.error)
+      ElMessage.error('/create_input_channel:' + res.error)
     }
     playStopLoading.value = false
   })
@@ -151,8 +205,12 @@ function Play() {
 video {
   display: block;
   background-color: #888;
+  box-sizing: border-box;
 }
-.video-border {
+.pgm-border {
   border: 2px solid red;
+}
+.pvw-border {
+  border: 2px solid yellow;
 }
 </style>

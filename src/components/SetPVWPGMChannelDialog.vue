@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogFormVisible" title="设置主画面参数" width="500">
+  <el-dialog v-model="dialogFormVisible" title="设置PVW/PGM参数" width="500">
     <el-form :model="form">
       <el-form-item label="视频幅面宽度" :label-width="formLabelWidth">
         <el-input type="number" v-model.number="form.video.width" />
@@ -31,9 +31,6 @@
       </el-form-item>
       <el-form-item label="推流地址(rtmp)" :label-width="formLabelWidth">
         <el-input type="string" v-model="form.output_url" />
-      </el-form-item>
-      <el-form-item label="播流地址(m3u8)" :label-width="formLabelWidth">
-        <el-input type="string" v-model="form.play_url" />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -88,21 +85,18 @@ const form = reactive({
     sample_rate: 44100,
     bit_rate: 64
   },
-  output_url: 'rtmp://' + host + '/live/output',
-  play_url: 'http://' + host + ':8080/hls/live/output.m3u8'
+  output_url: 'rtmp://' + host + '/live/output'
 })
 
 request({
   method: 'post',
-  url: '/query_main_channel',
+  url: '/query_pvw_pgm_channel',
   data: {}
 }).then((res: any) => {
   if (res.success) {
     form.video = res.channel_params.video
     form.audio = res.channel_params.audio
     form.output_url = res.channel_params.output_url
-    form.play_url = res.channel_params.play_url
-    mitt.emit('SetHlsUrl', { url: form.play_url, is_pushing: res.is_pushing })
   }
 })
 
@@ -110,24 +104,34 @@ let isLoading = ref(false)
 
 function Confirm() {
   isLoading.value = true
-  request({
+  let createPVW = request({
     method: 'post',
-    url: '/create_main_channel',
+    url: '/create_pvw_pgm_channel',
     data: {
+      index: -1,
+      video: form.video,
+      audio: form.audio
+    }
+  })
+  let createPGM = request({
+    method: 'post',
+    url: '/create_pvw_pgm_channel',
+    data: {
+      index: -2,
       video: form.video,
       audio: form.audio,
-      output_url: form.output_url,
-      play_url: form.play_url
+      output_url: form.output_url
     }
-  }).then((res: any) => {
+  })
+  Promise.all([createPVW, createPGM]).then((res: any) => {
     isLoading.value = false
-    if (!res.success) {
-      ElMessage.error('/create_main_channel:' + res.error)
-      return
+    if (!res[0].success || !res[1].success) {
+      ElMessage.error('/create_pvw_pgm_channel:' + res[0].error + ',' + res[1].error)
+    } else {
+      ElMessage.success(JSON.stringify('成功创建PVW/PGM通道'))
     }
-    ElMessage.success(JSON.stringify(res))
     dialogFormVisible.value = false
-    mitt.emit('SetHlsUrl', { url: form.play_url, is_pushing: false })
+    mitt.emit('PGMStatus', { is_pushing: false })
   })
 }
 

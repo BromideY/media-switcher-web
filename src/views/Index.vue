@@ -3,35 +3,33 @@
   <div class="container">
     <div class="header">
       <img class="logo" src="/logo.png" alt="logo" />
-      <el-button @click="showPreviewNumDialog" type="primary" :icon="Setting">预览数量</el-button>
-      <el-button @click="showSetMainChannelDialog" type="primary" :icon="Setting"
-        >主画面参数</el-button
+      <el-button @click="showInputNumDialog" type="primary" :icon="Setting">源流数量</el-button>
+      <el-button @click="showSetPVWPGMChannelDialog" type="primary" :icon="Setting"
+        >PGM/PVW参数</el-button
       >
-      <el-button @click="SceneEditor" type="primary" :icon="Setting">设置主画面特效</el-button>
+      <el-button @click="SceneEditor" type="primary" :icon="Setting">主画面特效</el-button>
       <el-button @click="StartPush" type="primary" :loading="pushLoading">开始推流</el-button>
       <el-button @click="StopPush" type="primary" :loading="pushLoading">结束推流</el-button>
     </div>
     <div class="content">
-      <div class="main">
+      <div class="pvw-pgm">
         <div style="text-align: center">
           <RtcPlayer class="player" :playerWidth="640" :playerHeight="360" :index="-1"></RtcPlayer>
-          <el-text class="main-player-label">主画面</el-text>
+          <el-text class="player-label">PVW</el-text>
         </div>
+        <el-button @click="Take" type="primary" size="large"
+          >切换到PGM<el-icon><ArrowRightBold /></el-icon
+        ></el-button>
         <div style="text-align: center">
-          <HlsPlayer
-            class="player"
-            :playerWidth="640"
-            :playerHeight="360"
-            ref="HlsPlayerInstance"
-          ></HlsPlayer>
-          <el-text class="main-player-label">输出画面({{ pushStatus }})</el-text>
+          <RtcPlayer class="player" :playerWidth="640" :playerHeight="360" :index="-2"></RtcPlayer>
+          <el-text class="player-label">PGM({{ pushStatus }})</el-text>
         </div>
       </div>
-      <div class="preview">
+      <div class="input">
         <RtcPlayer
-          v-for="(i, index) in preview_num"
+          v-for="(i, index) in input_num"
           :key="i"
-          class="preview-player player"
+          class="input-player player"
           :playerWidth="320"
           :playerHeight="180"
           :index="index"
@@ -40,59 +38,71 @@
     </div>
   </div>
   <div>
-    <SetPreviewNumDialog
-      ref="SetPreviewNumDialogInstance"
-      @GetVal="GetSetPreviewNumDialogVal"
-    ></SetPreviewNumDialog>
-    <SetMainChannelDialog ref="SetMainChannelDialogInstance"></SetMainChannelDialog>
+    <SetInputNumDialog
+      ref="SetInputNumDialogInstance"
+      @GetVal="GetSetInputNumDialogVal"
+    ></SetInputNumDialog>
+    <SetPVWPGMChannelDialog ref="SetPVWPGMChannelDialogInstance"></SetPVWPGMChannelDialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import SetPreviewNumDialog from '../components/SetPreviewNumDialog.vue'
-import SetMainChannelDialog from '../components/SetMainChannelDialog.vue'
+import SetInputNumDialog from '../components/SetInputNumDialog.vue'
+import SetPVWPGMChannelDialog from '../components/SetPVWPGMChannelDialog.vue'
 import RtcPlayer from '../components/RtcPlayer.vue'
-import HlsPlayer from '../components/HlsPlayer.vue'
 import mitt from '../utils/mitt'
 import { ref } from 'vue'
 import { request } from '@/utils/request'
 import { ElMessage } from 'element-plus'
-import { Setting } from '@element-plus/icons-vue'
+import { Setting, ArrowRightBold } from '@element-plus/icons-vue'
 
-let preview_num = ref(8)
+let input_num = ref(8)
 request({
   method: 'post',
-  url: '/query_preview_channel_num',
+  url: '/query_input_channel_num',
   data: {}
 }).then((res: any) => {
   if (!res.success) {
-    ElMessage.error('/query_preview_channel_num:' + res.error)
+    ElMessage.error('/query_input_channel_num:' + res.error)
     return
   }
-  if (res.preview_channel_num >= 8) {
-    preview_num.value = res.preview_channel_num + 1
+  if (res.input_channel_num >= 8) {
+    input_num.value = res.input_channel_num + 1
   }
 })
 
-let SetPreviewNumDialogInstance = ref()
-let SetMainChannelDialogInstance = ref()
-let HlsPlayerInstance = ref()
+let SetInputNumDialogInstance = ref()
+let SetPVWPGMChannelDialogInstance = ref()
 let pushLoading = ref(false)
 let pushStatus = ref('未推流')
 
-function showPreviewNumDialog() {
-  SetPreviewNumDialogInstance.value.open()
+function showInputNumDialog() {
+  SetInputNumDialogInstance.value.open()
 }
 
-function showSetMainChannelDialog() {
-  SetMainChannelDialogInstance.value.open()
+function showSetPVWPGMChannelDialog() {
+  SetPVWPGMChannelDialogInstance.value.open()
+}
+
+function Take() {
+  request({
+    method: 'post',
+    url: '/switch_pvw_pgm_channel',
+    data: { index: -2, input_index: -1 }
+  }).then((res: any) => {
+    if (!res.success) {
+      ElMessage.error('/switch_pgm_channel:' + res.error)
+      return
+    }
+    mitt.emit('PGMInput', -1)
+  })
 }
 
 function SceneEditor() {
   window.open('/scene_editor', '_blank')
 }
 
-mitt.on('SetHlsUrl', (val: any) => {
+mitt.on('PGMStatus', (val: any) => {
   if (val.is_pushing) {
     pushStatus.value = '推流中'
   }
@@ -110,11 +120,8 @@ function StartPush() {
       ElMessage.error('/start_push:' + res.error)
       return
     }
-    ElMessage.success(JSON.stringify(res))
+    ElMessage.success('开始推流')
     pushStatus.value = '推流中'
-    if (res.success == true) {
-      HlsPlayerInstance.value.StartPlay()
-    }
   })
 }
 
@@ -131,16 +138,15 @@ function StopPush() {
       return
     }
     pushStatus.value = '未推流'
-    ElMessage.success(JSON.stringify(res))
-    HlsPlayerInstance.value.StopPlay()
+    ElMessage.success('结束推流')
   })
 }
 
-function GetSetPreviewNumDialogVal(val: any) {
+function GetSetInputNumDialogVal(val: any) {
   if (val > 0) {
-    preview_num.value = 0
+    input_num.value = 0
     while (val-- > 0) {
-      preview_num.value++
+      input_num.value++
     }
   }
 }
@@ -166,11 +172,12 @@ function GetSetPreviewNumDialogVal(val: any) {
   margin: 0 auto;
   margin-top: 10px;
 }
-.main {
+.pvw-pgm {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
+  align-items: center;
 }
-.preview-player {
+.input-player {
   margin-left: 27px;
   margin-right: 27px;
   margin-top: 5px;
@@ -182,7 +189,7 @@ function GetSetPreviewNumDialogVal(val: any) {
 .player:hover {
   box-shadow: 0 0 15px black;
 }
-.preview {
+.input {
   margin-top: 10px;
   display: flex;
   justify-content: flex-start;
@@ -190,7 +197,7 @@ function GetSetPreviewNumDialogVal(val: any) {
   margin-left: auto;
   margin-right: auto;
 }
-.main-player-label {
+.player-label {
   display: inline-block;
   margin-top: 10px;
   font-size: 30px;

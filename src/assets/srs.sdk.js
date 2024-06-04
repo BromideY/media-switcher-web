@@ -99,6 +99,7 @@ export function SrsRtcPublisherAsync() {
       }
       xhr.open('POST', conf.apiUrl, true)
       xhr.setRequestHeader('Content-type', 'application/json')
+      xhr.setRequestHeader('Access-Control-Allow-Origin', '*')
       xhr.send(JSON.stringify(data))
     })
     await self.pc.setRemoteDescription(
@@ -348,6 +349,7 @@ export function SrsRtcPlayerAsync() {
       }
       xhr.open('POST', conf.apiUrl, true)
       xhr.setRequestHeader('Content-type', 'application/json')
+      xhr.setRequestHeader('Access-Control-Allow-Origin', '*')
       xhr.send(JSON.stringify(data))
     })
     await self.pc.setRemoteDescription(

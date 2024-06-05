@@ -5,7 +5,6 @@
 
 <script setup lang="ts">
 import { fabric } from 'fabric'
-import { onMounted } from 'vue'
 
 let canvas: fabric.Canvas
 
@@ -18,25 +17,17 @@ ws.onopen = function () {
 }
 
 ws.onmessage = function (event) {
-  if (event.data.canvas_width != undefined) {
-    canvas.setWidth(event.data.canvas_width)
-  }
-  if (event.data.canvas_heigth != undefined) {
-    canvas.setHeight(event.data.canvas_heigth)
+  let wsMessage = JSON.parse(event.data)
+  if (wsMessage.canvas_width != undefined && wsMessage.canvas_height != undefined) {
+    canvas = new fabric.Canvas('canvas', {
+      width: wsMessage.canvas_width,
+      height: wsMessage.canvas_height
+    })
   }
   if (event.data != undefined) {
-    canvas.loadFromJSON(event.data, () => {
+    canvas.loadFromJSON(wsMessage, () => {
       canvas.renderAll()
     })
   }
 }
-
-onMounted(() => {
-  canvas = new fabric.Canvas('canvas', {
-    width: 1280,
-    height: 720
-  })
-})
 </script>
-
-<style scoped></style>

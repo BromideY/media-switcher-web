@@ -73,15 +73,15 @@ const sample_rate_option = [
 
 const form = reactive({
   video: {
-    width: 1280,
-    height: 720,
-    frame_rate: 25,
-    bit_rate: 1000
+    width: 640,
+    height: 360,
+    frame_rate: 15,
+    bit_rate: 200
   },
   audio: {
-    channels: 2,
-    sample_rate: 44100,
-    bit_rate: 64
+    channels: 1,
+    sample_rate: 16000,
+    bit_rate: 32
   },
   output_url: 'rtmp://127.0.0.1/live/output'
 })

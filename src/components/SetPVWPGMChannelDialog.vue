@@ -71,8 +71,6 @@ const sample_rate_option = [
   }
 ]
 
-let host = window.location.hostname
-
 const form = reactive({
   video: {
     width: 1280,
@@ -85,7 +83,7 @@ const form = reactive({
     sample_rate: 44100,
     bit_rate: 64
   },
-  output_url: 'rtmp://' + host + '/live/output'
+  output_url: 'rtmp://127.0.0.1/live/output'
 })
 
 request({

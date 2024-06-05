@@ -71,6 +71,12 @@ request({
   }
 })
 
+let wsAddr = 'ws://' + window.location.hostname + ':9001'
+const ws = new WebSocket(wsAddr)
+ws.onopen = function () {
+  console.log(wsAddr + ' connected')
+}
+
 let SetInputNumDialogInstance = ref()
 let SetPVWPGMChannelDialogInstance = ref()
 let pushLoading = ref(false)

@@ -89,7 +89,7 @@ const form = reactive({
 request({
   method: 'post',
   url: '/query_pvw_pgm_channel',
-  data: {}
+  data: { index: -2 }
 }).then((res: any) => {
   if (res.success) {
     form.video = res.channel_params.video

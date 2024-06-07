@@ -8,7 +8,7 @@ import { fabric } from 'fabric'
 
 let canvas: fabric.Canvas
 
-let wsAddr = 'ws://127.0.0.1:9002'
+let wsAddr = 'ws://' + window.location.host + '/Scene'
 
 const ws = new WebSocket(wsAddr)
 

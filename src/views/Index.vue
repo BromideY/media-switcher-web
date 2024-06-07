@@ -71,7 +71,7 @@ request({
   }
 })
 
-let wsAddr = 'ws://' + window.location.hostname + ':9001'
+let wsAddr = 'ws://' + window.location.host + '/Hearbeat'
 const ws = new WebSocket(wsAddr)
 ws.onopen = function () {
   console.log(wsAddr + ' connected')

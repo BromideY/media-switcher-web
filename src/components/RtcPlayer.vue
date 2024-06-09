@@ -11,7 +11,11 @@
       muted
     ></video>
     <div v-if="showInputControl">
-      <el-input v-model="source_url" placeholder="源流地址(rtmp/rtsp/hls/mp4....)" /><br />
+      <el-input
+        v-model="source_url"
+        clearable
+        placeholder="源流地址(rtmp/rtsp/hls/mp4....)"
+      /><br />
       <el-button @click="Play" type="primary" size="small" :loading="playStopLoading"
         >播放</el-button
       >
@@ -182,6 +186,10 @@ function Stop() {
 }
 
 function Play() {
+  if (source_url.value == '') {
+    ElMessage.warning('请输入播流地址')
+    return
+  }
   show.value = false
   playStopLoading.value = true
   request({

@@ -3,11 +3,11 @@
   <div class="container">
     <div class="header">
       <img class="logo" src="/logo.png" alt="logo" />
-      <el-button @click="showInputNumDialog" type="primary" :icon="Setting">源流数量</el-button>
+      <el-button @click="showInputNumDialog" type="primary" :icon="Setting">设置源流数量</el-button>
       <el-button @click="showSetPVWPGMChannelDialog" type="primary" :icon="Setting"
-        >PGM/PVW参数</el-button
+        >创建PGM/PVW</el-button
       >
-      <el-button @click="SceneEditor" type="primary" :icon="Setting">主画面特效</el-button>
+      <el-button @click="SceneEditor" type="primary" :icon="Setting">设置主画面特效</el-button>
       <el-button @click="StartPush" type="primary" :loading="pushLoading">开始推流</el-button>
       <el-button @click="StopPush" type="primary" :loading="pushLoading">结束推流</el-button>
     </div>

@@ -24,7 +24,7 @@ const formLabelWidth = '100px'
 const emit = defineEmits(['GetVal'])
 
 const form = reactive({
-  num: 4
+  num: 8
 })
 
 function ReturnVal() {
